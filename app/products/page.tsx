@@ -1,9 +1,14 @@
 import { createClient } from "@/utils/supabase/server";
-import EditProducts from "./EditProducts";
-import type { Product } from "@/app/products/EditProducts"; // ou le chemin exact
+import Inventaire from "./Inventaire";
+import type { Product } from "@/app/products/Inventaire";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: products } = (await supabase
     .from("products")
@@ -14,13 +19,17 @@ export default async function Page() {
 		category_id,
 		category:categories!category_fk(name),
       image_url
-	`,
+      `,
     )
     .order("id")) as unknown as { data: Product[] };
 
+  if (!user) {
+    return redirect("/sign-in");
+  }
+
   return (
     <div>
-      <EditProducts initialProducts={products ?? []} />
+      <Inventaire initialProducts={products ?? []} />
     </div>
   );
 }
