@@ -1,19 +1,31 @@
 import { createBrowserClient } from "@supabase/ssr";
 
-export const getProductsClient = async () => {
+export type Product = {
+  id: number;
+  title: string;
+  category_id: number;
+  image_url?: string;
+  category?: {
+    name: string;
+  };
+};
+
+export const getProductsClient = async (): Promise<Product[]> => {
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  ); // ou ton utilitaire client
+  );
+
   const { data, error } = await supabase
     .from("products")
     .select(
       `
-			id,
-			title,
-			category_id,
-			category:categories!category_fk(name)
-		`,
+      id,
+      title,
+      category_id,
+      image_url,
+      category:categories!category_fk(name)
+    `,
     )
     .order("id");
 
@@ -22,5 +34,8 @@ export const getProductsClient = async () => {
     return [];
   }
 
-  return data ?? [];
+  return (data ?? []).map((product) => ({
+    ...product,
+    category: Array.isArray(product.category) ? product.category[0] : product.category,
+  }));
 };

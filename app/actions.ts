@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { randomUUID } from "crypto";
+import { createBrowserClient } from "@supabase/ssr";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -135,45 +136,48 @@ export async function updateUserProfileAction(displayName: string, email: string
   }
   return { success: true, message: "Profil mis à jour avec succès !" };
 }
+
 export async function addProductAction(formData: FormData) {
   const title = formData.get("title")?.toString();
-  const category_id_raw = formData.get("category_id")?.toString();
+  const category_id = formData.get("category_id")?.toString();
+  const image_url = formData.get("image_url")?.toString();
   const file = formData.get("image") as File | null;
 
-  const category_id = category_id_raw ? parseInt(category_id_raw, 10) : null;
-
-  if (!title || !category_id || !file) {
-    return { success: false, message: "Titre, image et catégorie requis." };
+  if (!title || !category_id) {
+    return { success: false, message: "Titre et catégorie requis." };
   }
 
   const supabase = await createClient();
+  let finalImageUrl = image_url ?? null;
+  let imageLabel = null;
 
-  // Générer un nom de fichier unique
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${randomUUID()}.${fileExt}`;
-  const filePath = `products/${fileName}`;
+  if (file && file.size > 0) {
+    const originalName = file.name;
+    const fileExt = originalName.split(".").pop();
+    const safeFileName = originalName.replace(/\s+/g, "_"); // facultatif
+    const filePath = `${safeFileName}`;
 
-  // 1. Upload dans le bucket
-  const { error: uploadError } = await supabase.storage.from("product-images").upload(filePath, file, {
-    cacheControl: "3600",
-    upsert: false,
-  });
+    const { error: uploadError } = await supabase.storage.from("product-images").upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false, // change to true si tu veux écraser les fichiers identiques
+    });
 
-  if (uploadError) {
-    console.error("Erreur upload image :", uploadError.message);
-    return { success: false, message: "Erreur lors de l'envoi de l'image." };
+    if (uploadError) {
+      console.error("Erreur upload image :", uploadError.message);
+      return { success: false, message: "Échec de l'upload de l'image" };
+    }
+
+    const { data: publicUrlData } = supabase.storage.from("product-images").getPublicUrl(filePath);
+
+    finalImageUrl = publicUrlData.publicUrl;
+    imageLabel = originalName; // 🏷️ label enregistré
   }
 
-  // 2. Récupérer l’URL publique
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("product-images").getPublicUrl(filePath);
-
-  // 3. Insérer le produit dans la base
   const { error } = await supabase.from("products").insert({
     title,
-    category_id,
-    image_url: publicUrl,
+    category_id: parseInt(category_id, 10),
+    image_url: finalImageUrl,
+    image_label: imageLabel,
   });
 
   if (error) {
@@ -213,6 +217,7 @@ export async function deleteProductAction(productId: number) {
 
   return { success: true, message: "Produit supprimé avec succès." };
 }
+
 export async function getCategoriesAction() {
   const supabase = await createClient();
   const { data, error } = await supabase.from("categories").select("*").order("name", { ascending: true });
@@ -223,4 +228,26 @@ export async function getCategoriesAction() {
   }
 
   return data ?? [];
+}
+
+export async function listImagesFromBucket(): Promise<string[]> {
+  const bucket = "product-images";
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+
+  const { data, error } = await supabase.storage.from(bucket).list("", {
+    limit: 100,
+    sortBy: { column: "created_at", order: "desc" },
+  });
+
+  if (error) {
+    console.error("❌ Erreur Supabase :", error.message);
+    return [];
+  }
+
+  const publicPrefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}`;
+  const images = data?.map((file) => `${publicPrefix}/${file.name}`) ?? [];
+  return images;
 }

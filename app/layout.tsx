@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import Header from "@/components/header/Header";
 
 const defaultUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
 
@@ -36,12 +37,13 @@ export default function RootLayout({
     <html lang="en" className={`${antonSans.variable} ${geistSans.className}`} suppressHydrationWarning>
       <body className="bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <Header />
           <main className="min-h-screen flex flex-col items-center">
-            <div className="flex-1 w-full flex flex-col gap-20 items-center">
+            <div className="flex-1 w-full flex flex-col gap-10 items-center">
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                  <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Next.js Supabase Starter</Link>
+                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5">
+                  <div className="flex gap-5 items-center text-xl font-anton">
+                    <Link href={"/"}>Lucelle App</Link>
                   </div>
                   {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
                 </div>

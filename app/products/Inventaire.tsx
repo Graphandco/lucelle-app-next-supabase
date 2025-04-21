@@ -21,18 +21,13 @@ export default function Inventaire({ initialProducts }: { initialProducts: Produ
 
   return (
     <div className="space-y-8">
-      <AddProduct
+      {/* <AddProduct
         onAdd={async () => {
           const updated = await getProductsClient();
-          setProducts(
-            updated.map((product) => ({
-              ...product,
-              category: Array.isArray(product.category) ? product.category[0] : product.category,
-            })),
-          );
+          setProducts(updated);
         }}
-      />
-      <ProductList products={products} setProducts={setProducts} />
+      /> */}
+      <ProductList products={products} setProducts={setProducts} pageType="inventaire" />
     </div>
   );
 }
