@@ -29,7 +29,18 @@ export default function AddProduct({ onAdd }: Props) {
     getCategoriesAction().then(setCategories);
 
     listImagesFromBucket().then((images) => {
-      setExistingImages(images);
+      const filtered = images.filter((url) => {
+        const filename = url.split("/").pop();
+        return filename !== ".emptyFolderPlaceholder";
+      });
+
+      const sortedImages = filtered.sort((a, b) => {
+        const nameA = a.split("/").pop() ?? "";
+        const nameB = b.split("/").pop() ?? "";
+        return nameA.localeCompare(nameB);
+      });
+
+      setExistingImages(sortedImages);
     });
   }, []);
 
@@ -93,7 +104,7 @@ export default function AddProduct({ onAdd }: Props) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className=" max-h-[100vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             <div className="text-2xl text-primary">Ajouter un produit</div>
@@ -129,27 +140,20 @@ export default function AddProduct({ onAdd }: Props) {
 
           <div>
             <Label>Ou choisir une image existante</Label>
-            <div className="flex gap-4 flex-wrap">
-              {existingImages.map((url) => {
-                const filename = url.split("/").pop();
 
+            <div className="flex gap-2 flex-wrap max-h-96 overflow-y-auto border p-2 rounded">
+              {existingImages.map((url) => {
+                const filename = url.split("/").pop(); // Extraire le nom du fichier
                 return (
                   <button
                     key={url}
                     type="button"
                     onClick={() => handleSelectImage(url)}
-                    className={`relative w-24 flex flex-col items-center text-center border rounded p-1 transition-all ${
-                      selectedImageUrl === url ? "ring-2 ring-primary" : "hover:ring-1 hover:ring-muted"
+                    className={`grow border rounded p-2 text-center ${
+                      selectedImageUrl === url ? "ring-2 ring-primary" : ""
                     }`}>
-                    <div className="relative">
-                      <Image src={url} alt={filename ?? "Image"} width={40} height={40} className="rounded" />
-                      {selectedImageUrl === url && (
-                        <div className="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow">
-                          <Check className="w-4 h-4 text-green-600" />
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-xs mt-1 truncate max-w-[90px]">{filename}</span>
+                    <Image src={url} alt={filename ?? "Image"} width={40} height={40} className="rounded mx-auto" />
+                    <span className="block mt-1 text-xs text-muted-foreground truncate max-w-[80px]">{filename}</span>
                   </button>
                 );
               })}

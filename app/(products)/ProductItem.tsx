@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Product } from "./ProductList";
@@ -11,9 +13,20 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Trash2 } from "lucide-react";
-
+import { Trash2, ShoppingCart } from "lucide-react";
 import { toggleInCartAction, toggleTobuyAction } from "@/app/actions";
+import { Badge } from "@/components/ui/badge";
+
+type Props = {
+  product: Product;
+  editMode: boolean;
+  onDeleteRequest: (product: Product) => void;
+  onDeleteCancel: () => void;
+  onDeleteConfirm: () => void;
+  isDeleting: boolean;
+  pageType: "inventaire" | "shopping";
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+};
 
 export default function ProductItem({
   product,
@@ -24,43 +37,42 @@ export default function ProductItem({
   isDeleting,
   pageType,
   setProducts,
-}: {
-  product: Product;
-  editMode: boolean;
-  onDeleteRequest: (product: Product) => void;
-  onDeleteCancel: () => void;
-  onDeleteConfirm: () => void;
-  isDeleting: boolean;
-  pageType: string;
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-}) {
+}: Props) {
+  const handleClick = async () => {
+    if (editMode) return;
+
+    const updatedProduct = { ...product };
+
+    if (pageType === "inventaire") {
+      const res = await toggleTobuyAction(product.id, product.tobuy ?? false);
+      if (res.success) {
+        updatedProduct.tobuy = !product.tobuy;
+      }
+    } else {
+      const res = await toggleInCartAction(product.id, product.incart ?? false);
+      if (res.success) {
+        updatedProduct.incart = !product.incart;
+      }
+    }
+
+    // ✅ Met à jour le produit dans la liste
+    setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, ...updatedProduct } : p)));
+  };
+
   return (
     <motion.li
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2 }}
-      onClick={async () => {
-        if (editMode) return;
-
-        const updated = { ...product };
-
-        if (pageType === "inventaire") {
-          const res = await toggleTobuyAction(product.id, product.tobuy);
-          if (res.success) {
-            updated.tobuy = !product.tobuy;
-          }
-        } else {
-          const res = await toggleInCartAction(product.id, product.incart);
-          if (res.success) {
-            updated.incart = !product.incart;
-          }
-        }
-
-        setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, ...updated } : p)));
-      }}
-      className="flex flex-col items-center text-center py-3 px-2 bg-neutral-900 rounded-xl cursor-pointer hover:bg-neutral-800 transition-colors">
-      <div className="flex flex-col items-center gap-1">
+      onClick={handleClick}
+      className={`relative flex flex-col items-center text-center py-3 px-2 bg-neutral-900 rounded-xl cursor-pointer hover:bg-neutral-800 transition-colors ${pageType === "inventaire" && product.tobuy && "border border-primary"}`}>
+      <div className="flex flex-col items-center gap-2">
+        {pageType === "inventaire" && product.tobuy && (
+          <Badge className="absolute -top-2 -right-2">
+            <ShoppingCart size={20} />
+          </Badge>
+        )}
         {product.image_url && (
           <Image
             src={product.image_url}
@@ -71,13 +83,12 @@ export default function ProductItem({
           />
         )}
         <span className="text-neutral-300 text-sm">{product.title}</span>
-        <div className="text-xs text-neutral-400">
+        {/* <div className="text-xs text-neutral-400">
           <div>{product.tobuy ? "🛒 À acheter" : "✅ Dans l'inventaire"}</div>
           <div>{product.incart ? "🧺 Dans le panier" : "⛔️ Pas encore au panier"}</div>
-        </div>
+        </div> */}
       </div>
 
-      {/* Suppression visible uniquement en editMode */}
       {editMode && (
         <Dialog>
           <DialogTrigger asChild>

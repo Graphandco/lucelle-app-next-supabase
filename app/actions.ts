@@ -4,8 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { randomUUID } from "crypto";
-import { createBrowserClient } from "@supabase/ssr";
+import { createBrowserClient, createServerClient } from "@supabase/ssr";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -223,6 +222,41 @@ export async function toggleInCartAction(productId: number, currentValue: boolea
 
   if (error) {
     console.error("Erreur toggle incart:", error.message);
+    return { success: false, message: error.message };
+  }
+
+  return { success: true };
+}
+
+export async function clearCartAction(productIds: number[]) {
+  const supabase = await createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        async getAll() {
+          const allHeaders = await headers();
+          return (
+            allHeaders
+              .get("cookie")
+              ?.split(";")
+              .map((cookie): { name: string; value: string } => {
+                const [name, ...rest] = cookie.split("=");
+                return { name: name.trim(), value: rest.join("=").trim() };
+              }) ?? []
+          );
+        },
+        setAll(cookiesToSet) {
+          // Implement cookie setting logic if needed
+        },
+      },
+    },
+  );
+
+  const { error } = await supabase.from("products").update({ incart: false, tobuy: false }).in("id", productIds);
+
+  if (error) {
+    console.error("❌ clearCartAction error:", error.message);
     return { success: false, message: error.message };
   }
 

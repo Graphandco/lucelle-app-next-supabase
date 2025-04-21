@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
-import Inventaire from "./Inventaire";
-import type { Product } from "@/app/products/Inventaire";
+import ProductList from "@/app/(products)/ProductList";
+import type { Product } from "@/app/(products)/ProductList";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
@@ -14,12 +14,14 @@ export default async function Page() {
     .from("products")
     .select(
       `
-		id,
-		title,
-		category_id,
-		category:categories!category_fk(name),
-      image_url
-      `,
+      id,
+      title,
+      category_id,
+      image_url,
+      tobuy,
+      incart,
+      category:categories!category_fk(name)
+    `,
     )
     .order("id")) as unknown as { data: Product[] };
 
@@ -29,7 +31,9 @@ export default async function Page() {
 
   return (
     <div>
-      <Inventaire initialProducts={products ?? []} />
+      <h1 className="font-anton text-5xl mb-8 text-center">Liste de courses</h1>
+
+      <ProductList initialProducts={products ?? []} pageType="shopping" />
     </div>
   );
 }
