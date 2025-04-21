@@ -178,6 +178,8 @@ export async function addProductAction(formData: FormData) {
     category_id: parseInt(category_id, 10),
     image_url: finalImageUrl,
     image_label: imageLabel,
+    tobuy: true,
+    incart: false,
   });
 
   if (error) {
@@ -199,6 +201,32 @@ export async function getProductsAction() {
   }
 
   return data ?? [];
+}
+
+export async function toggleTobuyAction(productId: number, currentValue: boolean) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("products").update({ tobuy: !currentValue }).eq("id", productId);
+
+  if (error) {
+    console.error("Erreur toggle tobuy:", error.message);
+    return { success: false, message: error.message };
+  }
+
+  return { success: true };
+}
+
+export async function toggleInCartAction(productId: number, currentValue: boolean) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("products").update({ incart: !currentValue }).eq("id", productId);
+
+  if (error) {
+    console.error("Erreur toggle incart:", error.message);
+    return { success: false, message: error.message };
+  }
+
+  return { success: true };
 }
 
 export async function deleteProductAction(productId: number) {

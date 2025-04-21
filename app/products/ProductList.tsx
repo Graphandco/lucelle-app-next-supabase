@@ -7,26 +7,19 @@ import { deleteProductAction } from "@/app/actions";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Check, Divide, Pencil, Trash2 } from "lucide-react";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Check, Pencil } from "lucide-react";
+
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
+import ProductItem from "./ProductItem";
 
 export type Product = {
   id: number;
   title: string;
   category_id: number;
   image_url?: string;
-  image_label?: string; // 👈 ajouter ici
+  image_label?: string;
+  tobuy: boolean;
+  incart: boolean;
   category?: {
     name: string;
   };
@@ -35,7 +28,7 @@ export type Product = {
 type Props = {
   products: Product[];
   pageType: "inventaire" | "shopping";
-  setProducts: (products: Product[]) => void;
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
 };
 
 export default function ProductList({ products, setProducts, pageType }: Props) {
@@ -118,62 +111,17 @@ export default function ProductList({ products, setProducts, pageType }: Props) 
                 <ul className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                   <AnimatePresence>
                     {group.map((product) => (
-                      <motion.li
+                      <ProductItem
                         key={product.id}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                        className="flex flex-col items-center text-center py-3 px-2 bg-neutral-900 rounded-xl ">
-                        <div className="flex flex-col items-center gap-1">
-                          {product.image_url && (
-                            <>
-                              <Image
-                                src={product.image_url}
-                                alt={product.image_label ?? product.title ?? "Image"}
-                                width={50}
-                                height={50}
-                                sizes="(max-width: 640px) 100vw, 320px"
-                              />
-                              {/* <span className="text-xs mt-1 truncate max-w-[90px]">
-                                {product.image_label ?? product.image_url?.split("/").pop()}
-                              </span> */}
-                            </>
-                          )}
-                          <span className="text-neutral-300 text-sm">{product.title}</span>
-                        </div>
-
-                        {editMode && (
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setSelectedProduct(product)}
-                                className="text-red-600 hover:text-red-700">
-                                <Trash2 className="w-4 h-4" />
-                                <span className="sr-only">Supprimer {product.title}</span>
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Supprimer ce produit ?</DialogTitle>
-                                <DialogDescription>
-                                  Le produit <strong>{product.title}</strong> sera supprimé définitivement.
-                                </DialogDescription>
-                              </DialogHeader>
-                              <DialogFooter>
-                                <Button variant="ghost" onClick={() => setSelectedProduct(null)}>
-                                  Annuler
-                                </Button>
-                                <Button variant="destructive" onClick={handleConfirmDelete} disabled={isPending}>
-                                  {isPending ? "Suppression..." : "Confirmer"}
-                                </Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        )}
-                      </motion.li>
+                        product={product}
+                        editMode={editMode}
+                        isDeleting={isPending}
+                        onDeleteRequest={setSelectedProduct}
+                        onDeleteCancel={() => setSelectedProduct(null)}
+                        onDeleteConfirm={handleConfirmDelete}
+                        pageType={pageType}
+                        setProducts={setProducts}
+                      />
                     ))}
                   </AnimatePresence>
                 </ul>

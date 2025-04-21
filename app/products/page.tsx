@@ -29,7 +29,6 @@ export default async function Page() {
 
   return (
     <div>
-      <h1 className="text-4xl font-anton text-primary">Inventaire</h1>
       <Inventaire initialProducts={products ?? []} />
     </div>
   );

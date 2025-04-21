@@ -5,6 +5,8 @@ export type Product = {
   title: string;
   category_id: number;
   image_url?: string;
+  tobuy: boolean;
+  incart: boolean;
   category?: {
     name: string;
   };
@@ -20,12 +22,14 @@ export const getProductsClient = async (): Promise<Product[]> => {
     .from("products")
     .select(
       `
-      id,
-      title,
-      category_id,
-      image_url,
-      category:categories!category_fk(name)
-    `,
+    id,
+    title,
+    category_id,
+    image_url,
+    tobuy,
+    incart,
+    category:categories!category_fk(name)
+  `,
     )
     .order("id");
 

@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import AddProduct from "./AddProduct";
-import { getProductsClient } from "@/lib/supabase";
 
 import ProductList from "./ProductList";
 
@@ -11,6 +9,8 @@ export type Product = {
   title: string;
   category_id: number;
   image_url?: string;
+  tobuy: boolean;
+  incart: boolean;
   category?: {
     name: string;
   };
@@ -21,12 +21,8 @@ export default function Inventaire({ initialProducts }: { initialProducts: Produ
 
   return (
     <div className="space-y-8">
-      {/* <AddProduct
-        onAdd={async () => {
-          const updated = await getProductsClient();
-          setProducts(updated);
-        }}
-      /> */}
+      <h1 className="text-4xl font-anton text-primary">Inventaire</h1>
+
       <ProductList products={products} setProducts={setProducts} pageType="inventaire" />
     </div>
   );
