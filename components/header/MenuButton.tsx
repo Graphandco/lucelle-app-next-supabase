@@ -56,7 +56,7 @@ export default function MenuButton({ user }: { user: { user_metadata?: { display
         <NavigationMenuItem>
           <NavigationMenuTrigger>
             {typeof user === "object" && user.user_metadata?.display_name
-              ? `Hey ${user.user_metadata.display_name}`
+              ? `${user.user_metadata.display_name}`
               : "S'identifier"}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
