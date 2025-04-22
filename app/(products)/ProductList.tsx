@@ -54,7 +54,9 @@ export default function ProductList({ initialProducts, pageType }: Props) {
     for (const product of filteredProducts) {
       const categoryName = product.category?.name ?? "Sans catégorie";
       if (!map.has(categoryName)) map.set(categoryName, []);
-      map.get(categoryName)!.push(product);
+      const list = map.get(categoryName)!;
+      list.push(product);
+      list.sort((a, b) => a.title.localeCompare(b.title));
     }
 
     return map;
@@ -66,7 +68,9 @@ export default function ProductList({ initialProducts, pageType }: Props) {
     for (const product of productsToBuy) {
       const categoryName = product.category?.name ?? "Sans catégorie";
       if (!map.has(categoryName)) map.set(categoryName, []);
-      map.get(categoryName)!.push(product);
+      const list = map.get(categoryName)!;
+      list.push(product);
+      list.sort((a, b) => a.title.localeCompare(b.title));
     }
 
     return map;
@@ -88,6 +92,7 @@ export default function ProductList({ initialProducts, pageType }: Props) {
 
   return (
     <div className="space-y-8">
+      {/* Barre de contrôle */}
       <div className="flex items-center gap-2">
         <Input
           id="search"
@@ -105,52 +110,51 @@ export default function ProductList({ initialProducts, pageType }: Props) {
         <Button
           className={editMode ? "text-green-600" : ""}
           variant="outline"
-          //  size="icon"
           onClick={() => setEditMode((prev) => !prev)}>
           {editMode ? <Check /> : <Pencil />}
         </Button>
-        <Button
-          variant="outline"
-          //   size="icon"
-        >
+        <Button variant="outline">
           <Link href={pageType === "shopping" ? "/inventaire" : "/shopping-list"}>
             {pageType === "shopping" ? <Store /> : <ShoppingCart />}
           </Link>
         </Button>
       </div>
 
+      {/* Liste principale */}
       {filteredProducts.length === 0 ? (
         <p>Aucun produit trouvé.</p>
       ) : (
         <ul className="space-y-4">
           <AnimatePresence>
-            {Array.from(itemsToShow.entries()).map(([categoryName, group]) => (
-              <div key={categoryName} className="space-y-2">
-                <h3 className="text-3xl text-primary font-anton mt-7 mb-4">{categoryName}</h3>
-                <ul className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                  <AnimatePresence>
-                    {group.map((product) => (
-                      <ProductItem
-                        key={product.id}
-                        product={product}
-                        pageType={pageType}
-                        editMode={editMode}
-                        setProducts={setProducts}
-                        isDeleting={isPending}
-                        onDeleteRequest={setSelectedProduct}
-                        onDeleteCancel={() => setSelectedProduct(null)}
-                        onDeleteConfirm={handleConfirmDelete}
-                      />
-                    ))}
-                  </AnimatePresence>
-                </ul>
-              </div>
-            ))}
+            {Array.from(itemsToShow.entries())
+              .sort(([a], [b]) => a.localeCompare(b)) // 🔠 trie les catégories
+              .map(([categoryName, group]) => (
+                <div key={categoryName} className="space-y-2">
+                  <h3 className="text-3xl text-primary font-anton mt-7 mb-4">{categoryName}</h3>
+                  <ul className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                    <AnimatePresence>
+                      {group.map((product) => (
+                        <ProductItem
+                          key={product.id}
+                          product={product}
+                          pageType={pageType}
+                          editMode={editMode}
+                          setProducts={setProducts}
+                          isDeleting={isPending}
+                          onDeleteRequest={setSelectedProduct}
+                          onDeleteCancel={() => setSelectedProduct(null)}
+                          onDeleteConfirm={handleConfirmDelete}
+                        />
+                      ))}
+                    </AnimatePresence>
+                  </ul>
+                </div>
+              ))}
           </AnimatePresence>
         </ul>
       )}
 
-      {/* ✅ Affichage des produits dans le panier */}
+      {/* 🧺 Affichage du panier */}
       {pageType === "shopping" && productsInCart.length > 0 && (
         <div className="mt-10 space-y-4">
           <div className="flex justify-between items-center">
@@ -172,19 +176,21 @@ export default function ProductList({ initialProducts, pageType }: Props) {
           </div>
 
           <ul className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-            {productsInCart.map((product) => (
-              <ProductItem
-                key={product.id}
-                product={product}
-                pageType={pageType}
-                editMode={editMode}
-                setProducts={setProducts}
-                isDeleting={isPending}
-                onDeleteRequest={setSelectedProduct}
-                onDeleteCancel={() => setSelectedProduct(null)}
-                onDeleteConfirm={handleConfirmDelete}
-              />
-            ))}
+            {productsInCart
+              .sort((a, b) => a.title.localeCompare(b.title)) // 🔠 Trie les produits dans le panier
+              .map((product) => (
+                <ProductItem
+                  key={product.id}
+                  product={product}
+                  pageType={pageType}
+                  editMode={editMode}
+                  setProducts={setProducts}
+                  isDeleting={isPending}
+                  onDeleteRequest={setSelectedProduct}
+                  onDeleteCancel={() => setSelectedProduct(null)}
+                  onDeleteConfirm={handleConfirmDelete}
+                />
+              ))}
           </ul>
         </div>
       )}
