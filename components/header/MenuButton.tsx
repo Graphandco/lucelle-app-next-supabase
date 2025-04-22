@@ -13,6 +13,8 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { Span } from "next/dist/trace";
+import { LayoutDashboard } from "lucide-react";
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -60,21 +62,34 @@ export default function MenuButton({ user }: { user: { user_metadata?: { display
               : "S'identifier"}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid gap-3 p-4 w-full md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-              <li className="row-span-3">
+            <ul className="grid gap-3 p-2 ">
+              {/* <li className="row-span-3">
                 <NavigationMenuLink asChild>
                   <a
                     className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                    href="/">
-                    <div className="mb-2 mt-4 text-lg font-medium">shadcn/ui</div>
+                    href="/dashboard">
+                    <div className="mb-2 mt-4 text-lg font-medium">
+                      {typeof user === "object" && user.user_metadata?.display_name
+                        ? `${user.user_metadata.display_name}`
+                        : "S'identifier"}
+                    </div>
                     <p className="text-sm leading-tight text-muted-foreground">
                       Beautifully designed components built with Radix UI and Tailwind CSS.
                     </p>
                   </a>
                 </NavigationMenuLink>
-              </li>
-              <ListItem href="/docs" title="Introduction">
-                Re-usable components built using Radix UI and Tailwind CSS.
+              </li> */}
+              <ListItem
+                href="/dashboard"
+                title={
+                  typeof user === "object" && user.user_metadata?.display_name
+                    ? `${user.user_metadata.display_name}`
+                    : "S'identifier"
+                }>
+                <span className="flex items-center gap-1">
+                  <LayoutDashboard size={15} />
+                  <span>Tableau de bord</span>
+                </span>
               </ListItem>
               <ListItem href="/docs/installation" title="Installation">
                 How to install dependencies and structure your app.

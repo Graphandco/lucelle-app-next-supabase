@@ -105,11 +105,14 @@ export default function ProductList({ initialProducts, pageType }: Props) {
         <Button
           className={editMode ? "text-green-600" : ""}
           variant="outline"
-          size="icon"
+          //  size="icon"
           onClick={() => setEditMode((prev) => !prev)}>
           {editMode ? <Check /> : <Pencil />}
         </Button>
-        <Button variant="outline" size="icon">
+        <Button
+          variant="outline"
+          //   size="icon"
+        >
           <Link href={pageType === "shopping" ? "/inventaire" : "/shopping-list"}>
             {pageType === "shopping" ? <Store /> : <ShoppingCart />}
           </Link>

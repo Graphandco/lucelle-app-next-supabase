@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import { createClient } from "@/utils/supabase/server";
 import { LayoutDashboard, Menu, ShoppingBasket } from "lucide-react";
 import MenuButton from "./MenuButton";
+import { DropdownMenuDemo } from "./DropdownMenu";
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -13,18 +14,15 @@ export default async function AuthButton() {
   } = await supabase.auth.getUser();
 
   return user ? (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-3">
       <MenuButton user={user} />
-      <Button asChild size="sm" variant={"ghost"}>
-        <Link href="/shopping-list">
-          <ShoppingBasket />
-        </Link>
-      </Button>
-      <Button asChild size="sm" variant={"ghost"}>
-        <Link href="/dashboard">
-          <LayoutDashboard />
-        </Link>
-      </Button>
+      <Link href="/shopping-list">
+        <ShoppingBasket />
+      </Link>
+      {/* <Button asChild size="sm" variant={"ghost"}>
+      </Button> */}
+
+      <DropdownMenuDemo />
     </div>
   ) : (
     <div className="flex gap-2">
