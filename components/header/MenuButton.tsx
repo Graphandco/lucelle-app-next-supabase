@@ -14,7 +14,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Span } from "next/dist/trace";
-import { LayoutDashboard } from "lucide-react";
+import { House, LayoutDashboard, ListTodo, Store } from "lucide-react";
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -62,7 +62,7 @@ export default function MenuButton({ user }: { user: { user_metadata?: { display
               : "S'identifier"}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid gap-3 p-2 ">
+            <ul className="grid whitespace-nowrap p-3">
               {/* <li className="row-span-3">
                 <NavigationMenuLink asChild>
                   <a
@@ -79,23 +79,35 @@ export default function MenuButton({ user }: { user: { user_metadata?: { display
                   </a>
                 </NavigationMenuLink>
               </li> */}
-              <ListItem
-                href="/dashboard"
-                title={
-                  typeof user === "object" && user.user_metadata?.display_name
-                    ? `${user.user_metadata.display_name}`
-                    : "S'identifier"
-                }>
-                <span className="flex items-center gap-1">
-                  <LayoutDashboard size={15} />
-                  <span>Tableau de bord</span>
+              <div className="text-primary font-semibold mb-0.5">
+                {typeof user === "object" && user.user_metadata?.display_name
+                  ? `${user.user_metadata.display_name}`
+                  : "S'identifier"}
+              </div>
+              <ListItem href="/">
+                <span className="flex items-center gap-2">
+                  <House size={18} />
+                  <span className="text-white">Accueil</span>
                 </span>
               </ListItem>
-              <ListItem href="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
+              <ListItem href="/dashboard">
+                <span className="flex items-center gap-2">
+                  <LayoutDashboard size={18} />
+                  <span className="text-white">Tableau de bord</span>
+                </span>
               </ListItem>
-              <ListItem href="/docs/primitives/typography" title="Typography">
-                Styles for headings, paragraphs, lists...etc
+              <div className="text-primary font-semibold mt-2 mb-0.5">Produits</div>
+              <ListItem href="/shopping-list" title="Produits">
+                <span className="flex items-center gap-2">
+                  <ListTodo size={18} />
+                  <span className="text-white">Liste de courses</span>
+                </span>
+              </ListItem>
+              <ListItem href="/inventaire">
+                <span className="flex items-center gap-2">
+                  <Store size={18} />
+                  <span className="text-white">Inventaire</span>
+                </span>
               </ListItem>
             </ul>
           </NavigationMenuContent>
@@ -113,11 +125,11 @@ const ListItem = React.forwardRef<React.ElementRef<"a">, React.ComponentPropsWit
           <a
             ref={ref}
             className={cn(
-              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+              "block select-none rounded-md p-1 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
               className,
             )}
             {...props}>
-            <div className="text-sm font-medium leading-none">{title}</div>
+            {/* <div className="font-medium">{title}</div> */}
             <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{children}</p>
           </a>
         </NavigationMenuLink>
