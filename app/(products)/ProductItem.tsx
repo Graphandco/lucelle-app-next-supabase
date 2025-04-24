@@ -66,7 +66,7 @@ export default function ProductItem({
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2 }}
       onClick={handleClick}
-      className={`relative flex flex-col items-center text-center py-3 px-2 bg-neutral-900 rounded-xl cursor-pointer hover:bg-neutral-800 transition-colors ${pageType === "inventaire" && product.tobuy && "border border-primary"}`}>
+      className={`relative flex flex-col items-center text-center py-3 px-2 bg-card rounded-xl cursor-pointer hover:bg-neutral-800 transition-colors ${pageType === "inventaire" && product.tobuy && "border border-primary"}`}>
       <div className="flex flex-col items-center gap-2">
         {pageType === "inventaire" && product.tobuy && (
           <Badge className="absolute -top-2 -right-2">
@@ -80,6 +80,7 @@ export default function ProductItem({
             width={50}
             height={50}
             sizes="(max-width: 640px) 100vw, 320px"
+            style={{ height: "50px", objectFit: "contain" }}
           />
         )}
         <span className="text-neutral-300 text-sm">{product.title}</span>

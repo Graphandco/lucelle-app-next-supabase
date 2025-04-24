@@ -113,6 +113,15 @@ export default function ProductList({ initialProducts, pageType }: Props) {
           onClick={() => setEditMode((prev) => !prev)}>
           {editMode ? <Check /> : <Pencil />}
         </Button>
+        {/* Fixed edit button */}
+        {editMode && (
+          <Button
+            variant={"ghost"}
+            className="fixed right-6 bottom-6 bg-primary rounded-full z-50 hover:bg-primary/80 transition-colors"
+            onClick={() => setEditMode(false)}>
+            <Check />
+          </Button>
+        )}
         <Button variant="outline">
           <Link href={pageType === "shopping" ? "/inventaire" : "/shopping-list"}>
             {pageType === "shopping" ? <Store /> : <ShoppingCart />}

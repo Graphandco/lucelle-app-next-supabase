@@ -11,8 +11,8 @@ const defaultUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` 
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Lucelle App",
+  description: "Application de gestion des tâches de la vie quotidienne",
 };
 
 const geistSans = Geist({
@@ -36,21 +36,22 @@ export default function RootLayout({
       <body className="bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <main className="min-h-screen flex flex-col items-center">
-            <div className="flex-1 w-full flex flex-col gap-10 items-center">
+            <div className="flex-1 w-full flex flex-col gap-5 items-center">
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5">
-                  <div className="flex gap-5 items-center text-xl font-anton">
+                  <div className="flex gap-3 items-center text-xl font-anton">
                     <Link href={"/"}>
                       <Image
-                        src="/logo.svg"
-                        alt="Graph and Co"
-                        width={28}
-                        height={28}
-                        className="rounded-xl"
+                        src="/logo.png"
+                        alt="Lucelle App"
+                        width={40}
+                        height={40}
+                        // className="rounded-xl"
                         priority
                         sizes="(max-width: 640px) 100vw, 400px"
-                      />{" "}
+                      />
                     </Link>
+                    <div className="font-anton">Lucelle'App</div>
                   </div>
                   <Header />
                 </div>

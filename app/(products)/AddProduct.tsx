@@ -107,7 +107,7 @@ export default function AddProduct({ onAdd }: Props) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className=" max-h-[100vh] overflow-y-auto">
+      <DialogContent className=" max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             <div className="text-2xl text-primary">Ajouter un produit</div>
@@ -144,7 +144,7 @@ export default function AddProduct({ onAdd }: Props) {
           <div>
             <Label>Ou choisir une image existante</Label>
 
-            <div className="flex gap-2 flex-wrap max-h-96 overflow-y-auto border p-2 rounded">
+            <div className="flex gap-x-2 gap-y-5 flex-wrap max-h-96 overflow-y-auto border p-2 rounded">
               {existingImages.map((url) => {
                 const filename = url.split("/").pop(); // Extraire le nom du fichier
                 return (
@@ -152,11 +152,14 @@ export default function AddProduct({ onAdd }: Props) {
                     key={url}
                     type="button"
                     onClick={() => handleSelectImage(url)}
-                    className={`grow border rounded p-2 text-center ${
-                      selectedImageUrl === url ? "ring-2 ring-primary" : ""
-                    }`}>
-                    <Image src={url} alt={filename ?? "Image"} width={40} height={40} className="rounded mx-auto" />
-                    <span className="block mt-1 text-xs text-muted-foreground truncate max-w-[80px]">{filename}</span>
+                    className={`grow text-center flex flex-col justify-between ${selectedImageUrl === url ? "ring-2 ring-primary" : ""}`}>
+                    <Image src={url} alt={filename ?? "Image"} width={30} height={30} className="mx-auto h-[30px]" />
+                    <span className="block mt-1 text-xs text-muted-foreground truncate ">
+                      {(filename ?? "")
+                        .replace(/\.[^/.]+$/, "")
+                        .replace(/[-_]/g, " ")
+                        .replace(/^\w/, (c) => c.toUpperCase())}
+                    </span>
                   </button>
                 );
               })}
