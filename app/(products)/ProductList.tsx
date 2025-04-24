@@ -93,7 +93,7 @@ export default function ProductList({ initialProducts, pageType }: Props) {
   return (
     <div className="space-y-8">
       {/* Barre de contrôle */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <Input
           id="search"
           type="text"
@@ -108,8 +108,9 @@ export default function ProductList({ initialProducts, pageType }: Props) {
           }}
         />
         <Button
-          className={editMode ? "text-green-600" : ""}
-          variant="outline"
+          className={editMode ? "text-green-600" : "text-primary"}
+          variant="ghost"
+          size={"icon"}
           onClick={() => setEditMode((prev) => !prev)}>
           {editMode ? <Check /> : <Pencil />}
         </Button>
@@ -122,7 +123,7 @@ export default function ProductList({ initialProducts, pageType }: Props) {
             <Check />
           </Button>
         )}
-        <Button variant="outline">
+        <Button variant="ghost" size={"icon"} className="text-primary">
           <Link href={pageType === "shopping" ? "/inventaire" : "/shopping-list"}>
             {pageType === "shopping" ? <Store /> : <ShoppingCart />}
           </Link>
@@ -133,7 +134,7 @@ export default function ProductList({ initialProducts, pageType }: Props) {
       {filteredProducts.length === 0 ? (
         <p>Aucun produit trouvé.</p>
       ) : (
-        <ul className="space-y-4">
+        <ul className="space-y-14">
           <AnimatePresence>
             {Array.from(itemsToShow.entries())
               .sort(([a], [b]) => a.localeCompare(b)) // 🔠 trie les catégories

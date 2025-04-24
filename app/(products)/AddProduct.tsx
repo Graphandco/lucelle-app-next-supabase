@@ -99,10 +99,7 @@ export default function AddProduct({ onAdd }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          //   size="icon"
-        >
+        <Button variant="ghost" size="icon" className="text-primary">
           <Plus />
         </Button>
       </DialogTrigger>
