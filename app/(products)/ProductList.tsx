@@ -91,38 +91,43 @@ export default function ProductList({ initialProducts, pageType }: Props) {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="">
       {/* Barre de contrôle */}
-      <div className="flex items-center gap-3">
-        <Input
-          id="search"
-          type="text"
-          placeholder="Rechercher..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <AddProduct
-          onAdd={async () => {
-            const updated = await getProductsClient();
-            setProducts(updated);
-          }}
-        />
-        <Button
-          className={editMode ? "text-green-600" : "text-primary"}
-          variant="ghost"
-          size={"icon"}
-          onClick={() => setEditMode((prev) => !prev)}>
-          {editMode ? <Check /> : <Pencil />}
-        </Button>
-        {/* Fixed edit button */}
-        {editMode && (
-          <Button
-            variant={"ghost"}
-            className="fixed right-6 bottom-6 bg-primary rounded-full z-50 hover:bg-primary/80 transition-colors"
-            onClick={() => setEditMode(false)}>
-            <Check />
-          </Button>
+      <div className="flex items-center justify-end gap-3 relative z-10">
+        {pageType === "inventaire" && (
+          <>
+            <Input
+              id="search"
+              type="text"
+              placeholder="Rechercher..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <AddProduct
+              onAdd={async () => {
+                const updated = await getProductsClient();
+                setProducts(updated);
+              }}
+            />
+            <Button
+              className={editMode ? "text-green-600" : "text-primary"}
+              variant="ghost"
+              size={"icon"}
+              onClick={() => setEditMode((prev) => !prev)}>
+              {editMode ? <Check /> : <Pencil />}
+            </Button>
+            {/* Fixed edit button */}
+            {editMode && (
+              <Button
+                variant={"ghost"}
+                className="fixed right-6 bottom-6 bg-primary rounded-full z-50 hover:bg-primary/80 transition-colors"
+                onClick={() => setEditMode(false)}>
+                <Check />
+              </Button>
+            )}
+          </>
         )}
+
         <Button variant="ghost" size={"icon"} className="text-primary">
           <Link href={pageType === "shopping" ? "/inventaire" : "/shopping-list"}>
             {pageType === "shopping" ? <Store /> : <ShoppingCart />}
@@ -134,7 +139,7 @@ export default function ProductList({ initialProducts, pageType }: Props) {
       {filteredProducts.length === 0 ? (
         <p>Aucun produit trouvé.</p>
       ) : (
-        <ul className="space-y-14">
+        <ul className={`mb-14 flex flex-col gap-8 ${pageType === "inventaire" ? "space-y-14" : "-mt-16"}`}>
           <AnimatePresence>
             {Array.from(itemsToShow.entries())
               .sort(([a], [b]) => a.localeCompare(b)) // 🔠 trie les catégories

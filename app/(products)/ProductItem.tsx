@@ -66,13 +66,13 @@ export default function ProductItem({
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2 }}
       onClick={handleClick}
-      className={`relative flex flex-col items-center text-center py-3 px-2 bg-card rounded-xl cursor-pointer hover:bg-neutral-800 transition-colors ${pageType === "inventaire" && product.tobuy && "border border-primary"}`}>
+      className={`relative flex flex-col items-center text-center py-3 px-2 bg-card rounded-xl cursor-pointer ${pageType === "inventaire" && product.tobuy && "border border-primary"}`}>
       <div className="flex flex-col items-center gap-2">
-        {pageType === "inventaire" && product.tobuy && (
+        {/* {pageType === "inventaire" && product.tobuy && (
           <Badge className="absolute -top-2 -right-2">
             <ShoppingCart size={20} />
           </Badge>
-        )}
+        )} */}
         {product.image_url && (
           <Image
             src={product.image_url}
