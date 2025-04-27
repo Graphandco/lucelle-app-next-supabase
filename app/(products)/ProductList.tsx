@@ -7,7 +7,7 @@ import AddProduct from "./AddProduct";
 import ProductItem from "./ProductItem";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Pencil, Store, ShoppingCart } from "lucide-react";
+import { Check, Pencil, Store, ShoppingCart, X } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
@@ -96,13 +96,18 @@ export default function ProductList({ initialProducts, pageType }: Props) {
       <div className="flex items-center justify-end gap-3 relative z-10">
         {pageType === "inventaire" && (
           <>
-            <Input
-              id="search"
-              type="text"
-              placeholder="Rechercher..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+            <div className="relative grow flex items-center">
+              <div className="absolute right-3 text-neutral-500 hover:text-red-500 transition-colors">
+                <X size={20} className="cursor-pointer" onClick={() => setQuery("")} />
+              </div>
+              <Input
+                id="search"
+                type="text"
+                placeholder="Rechercher..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
             <AddProduct
               onAdd={async () => {
                 const updated = await getProductsClient();
